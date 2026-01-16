@@ -34,26 +34,33 @@ public class PlayerPathMarkerProvider implements WorldMapManager.MarkerProvider 
         for (int i = 0; i < pathMarkers.size(); i++) {
             final PlayerPathTracker.MarkerEntry markerEntry = pathMarkers.get(i);
 
+            final String markerTexture = getMarkerTexture(i, pathMarkers.size());
+
+            final MapMarker marker = new MapMarker(
+                    markerEntry.getMarkerId(player) + "_" + markerTexture,
+                    "",
+                    markerTexture,
+                    PositionUtil.toTransformPacket(new Transform(markerEntry.position, Vector3f.ZERO)),
+                    null
+            );
+
             tracker.trySendMarker(
                     chunkViewRadius,
                     playerChunkX,
                     playerChunkZ,
-                    markerEntry.position,
-                    0.0f,
-                    markerEntry.getMarkerId(player),
-                    "Path Point " + (i + 1),
-                    playerRef,
-                    (id, name, ref) -> {
-                        Transform markerTransform = new Transform(markerEntry.position, Vector3f.ZERO);
-                        return new MapMarker(
-                                id,
-                                name,
-                                "Home.png",
-                                PositionUtil.toTransformPacket(markerTransform),
-                                null
-                        );
-                    }
+                    marker
             );
+        }
+    }
+
+    private static String getMarkerTexture(int index, int markerCount) {
+        float percentage = markerCount <= 1 ? 1f : (float) index / (markerCount - 1);
+        if (percentage < 0.1f) {
+            return "MapTrail_4.png";
+        } else if (percentage < 0.25f) {
+            return "MapTrail_6.png";
+        } else {
+            return "MapTrail_8.png";
         }
     }
 }

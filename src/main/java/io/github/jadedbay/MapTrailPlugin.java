@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  */
 public class MapTrailPlugin extends JavaPlugin {
 
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
+    static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
     public MapTrailPlugin(@Nonnull JavaPluginInit init) {super(init);}
 
