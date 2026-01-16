@@ -1,14 +1,14 @@
 {
-    "Group": "Example",
-    "Name": "ExamplePlugin",
-    "Version": "0.0.2",
+    "Group": "jadedbay",
+    "Name": "MapTrail",
+    "Version": "0.1.0",
     "Description": "An example plugin for HyTale!",
     "Authors": [
         {
-            "Name": "It's you!"
+            "Name": "jadedbay"
         }
     ],
-    "Website": "example.org",
+    "Website": "https://github.com/jadedbay/MapTrail",
     "ServerVersion": "*",
     "Dependencies": {
         
@@ -17,6 +17,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "org.example.plugin.ExamplePlugin",
+    "Main": "io.github.jadedbay.MapTrailPlugin",
     "IncludesAssetPack": true
 }
