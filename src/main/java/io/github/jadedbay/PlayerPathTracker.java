@@ -52,4 +52,8 @@ public class PlayerPathTracker {
     public static List<MarkerEntry> getPlayerPath(UUID playerUuid) {
         return markerPositions.getOrDefault(playerUuid, new ArrayList<>());
     }
+
+    public static void removePlayerPath(UUID playerUuid) {
+        markerPositions.remove(playerUuid);
+    }
 }

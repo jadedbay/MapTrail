@@ -54,10 +54,10 @@ public class PlayerPathMarkerProvider implements WorldMapManager.MarkerProvider 
     }
 
     private static String getMarkerTexture(int index, int markerCount) {
-        float percentage = markerCount <= 1 ? 1f : (float) index / (markerCount - 1);
-        if (percentage < 0.1f) {
+        float percentage = (float)(index + 1) / (float)markerCount;
+        if (percentage < 0.15f) {
             return "MapTrail_4.png";
-        } else if (percentage < 0.25f) {
+        } else if (percentage < 0.35f) {
             return "MapTrail_5.png";
         } else {
             return "MapTrail_6.png";
