@@ -1,8 +1,12 @@
 package io.github.jadedbay;
 
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.protocol.Packet;
+import com.hypixel.hytale.protocol.packets.player.ClientMovement;
 import com.hypixel.hytale.server.core.event.events.player.DrainPlayerFromWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.io.PacketHandler;
+import com.hypixel.hytale.server.core.io.adapter.PacketAdapters;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
@@ -25,6 +29,12 @@ public class MapTrailPlugin extends JavaPlugin {
         this.getCommandRegistry().registerCommand(new ExampleCommand(this.getName(), this.getManifest().getVersion().toString()));
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, this::onWorldAdd);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, this::onPlayerDisconnect);
+
+        PacketAdapters.registerInbound((PacketHandler handler, Packet packet) -> {
+            if (packet instanceof ClientMovement movementPacket) {
+                PlayerPathTracker.checkAndCreateMarker(handler.getAuth().getUuid(), movementPacket.absolutePosition);
+            }
+        });
 
     }
 

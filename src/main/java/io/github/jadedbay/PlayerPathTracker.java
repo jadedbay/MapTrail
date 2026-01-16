@@ -1,6 +1,7 @@
 package io.github.jadedbay;
 
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.protocol.Position;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerPathTracker {
     static class MarkerEntry {
-        final Vector3d position;
+        final Position position;
         final long timestamp;
 
-        MarkerEntry(Vector3d position) {
+        MarkerEntry(Position position) {
             this.position = position;
             this.timestamp = System.currentTimeMillis();
         }
@@ -28,21 +29,20 @@ public class PlayerPathTracker {
     private static final double DISTANCE_THRESHOLD = 10.0;
     private static final int MAX_MARKERS = 20;
 
-    public static void checkAndCreateMarker(Player player, Vector3d currentPos) {
-        UUID playerUuid = player.getUuid();
+    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos) {
         List<MarkerEntry> playerMarkers = markerPositions.computeIfAbsent(playerUuid, k -> new ArrayList<>());
 
         if (playerMarkers.isEmpty()) {
-            playerMarkers.add(new MarkerEntry(new Vector3d(currentPos)));
+            playerMarkers.add(new MarkerEntry(currentPos));
             return;
         }
 
-        Vector3d lastPos = playerMarkers.getLast().position;
+        Position lastPos = playerMarkers.getLast().position;
 
         double dx = currentPos.x - lastPos.x;
         double dz = currentPos.z - lastPos.z;
         if (dx * dx + dz * dz >= DISTANCE_THRESHOLD * DISTANCE_THRESHOLD) {
-            playerMarkers.add(new MarkerEntry(new Vector3d(currentPos)));
+            playerMarkers.add(new MarkerEntry(currentPos));
             if (playerMarkers.size() > MAX_MARKERS) {
                 playerMarkers.removeFirst();
             }
