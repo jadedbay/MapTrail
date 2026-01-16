@@ -29,6 +29,6 @@ public class MapTrailPlugin extends JavaPlugin {
     }
 
     private void onWorldAdd(AddWorldEvent event) {
-        event.getWorld().getWorldMapManager().addMarkerProvider("MapTrailMarker", new MapTrailMarkerProvider());
+        event.getWorld().getWorldMapManager().addMarkerProvider("playerPath", new MapTrailMarkerProvider());
     }
 }
