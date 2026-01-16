@@ -15,8 +15,8 @@ import com.hypixel.hytale.server.core.util.PositionUtil;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class MapTrailMarkerProvider implements WorldMapManager.MarkerProvider {
-    public static final MapTrailMarkerProvider INSTANCE = new MapTrailMarkerProvider();
+public class PlayerPathMarkerProvider implements WorldMapManager.MarkerProvider {
+    public static final PlayerPathMarkerProvider INSTANCE = new PlayerPathMarkerProvider();
 
     @Override
     public void update(@Nonnull World world, @Nonnull GameplayConfig gameplayConfig, @Nonnull WorldMapTracker tracker, int chunkViewRadius, int playerChunkX, int playerChunkZ) {
@@ -27,24 +27,24 @@ public class MapTrailMarkerProvider implements WorldMapManager.MarkerProvider {
         final Transform transform = playerRef.getTransform();
         final Vector3d currentPos = transform.getPosition();
 
-        PlayerPathTracker.checkAndCreateMatker(player, currentPos);
+        PlayerPathTracker.checkAndCreateMarker(player, currentPos);
 
-        List<Vector3d> pathPoints = PlayerPathTracker.getPlayerPath(player.getUuid());
+        List<PlayerPathTracker.MarkerEntry> pathMarkers = PlayerPathTracker.getPlayerPath(player.getUuid());
 
-        for (int i = 0; i < pathPoints.size(); i++) {
-            final Vector3d markerPos = pathPoints.get(i);
+        for (int i = 0; i < pathMarkers.size(); i++) {
+            final PlayerPathTracker.MarkerEntry markerEntry = pathMarkers.get(i);
 
             tracker.trySendMarker(
                     chunkViewRadius,
                     playerChunkX,
                     playerChunkZ,
-                    markerPos,
+                    markerEntry.position,
                     0.0f,
-                    "path_marker_" + player.getUuid() + "_" + i,
+                    markerEntry.getMarkerId(player),
                     "Path Point " + (i + 1),
                     playerRef,
                     (id, name, ref) -> {
-                        Transform markerTransform = new Transform(markerPos, Vector3f.ZERO);
+                        Transform markerTransform = new Transform(markerEntry.position, Vector3f.ZERO);
                         return new MapMarker(
                                 id,
                                 name,

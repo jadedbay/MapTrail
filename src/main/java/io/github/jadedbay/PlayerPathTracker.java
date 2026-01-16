@@ -10,25 +10,43 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerPathTracker {
-    private static final Map<UUID, List<Vector3d>> markerPositions = new ConcurrentHashMap<>();
-    private static final double DISTANCE_THRESHOLD = 5.0;
+    static class MarkerEntry {
+        final Vector3d position;
+        final long timestamp;
 
-    public static void checkAndCreateMatker(Player player, Vector3d currentPos) {
-        UUID playerUuid = player.getUuid();
-        List<Vector3d> playerMarkers = markerPositions.computeIfAbsent(playerUuid, k -> new ArrayList<>());
-
-        if (playerMarkers.isEmpty()) {
-            playerMarkers.add(new Vector3d(currentPos));
-            return;
+        MarkerEntry(Vector3d position) {
+            this.position = position;
+            this.timestamp = System.currentTimeMillis();
         }
 
-        Vector3d lastPos = markerPositions.get(playerUuid).getLast();
-        if (currentPos.distanceTo(lastPos) >= DISTANCE_THRESHOLD) {
-            playerMarkers.add(new Vector3d(currentPos));
+        public String getMarkerId(Player player) {
+            return "path_marker_" + player.getUuid() + "_" + timestamp;
         }
     }
 
-    public static List<Vector3d> getPlayerPath(UUID playerUuid) {
+    private static final Map<UUID, List<MarkerEntry>> markerPositions = new ConcurrentHashMap<>();
+    private static final double DISTANCE_THRESHOLD = 10.0;
+    private static final int MAX_MARKERS = 20;
+
+    public static void checkAndCreateMarker(Player player, Vector3d currentPos) {
+        UUID playerUuid = player.getUuid();
+        List<MarkerEntry> playerMarkers = markerPositions.computeIfAbsent(playerUuid, k -> new ArrayList<>());
+
+        if (playerMarkers.isEmpty()) {
+            playerMarkers.add(new MarkerEntry(new Vector3d(currentPos)));
+            return;
+        }
+
+        Vector3d lastPos = markerPositions.get(playerUuid).getLast().position;
+        if (currentPos.distanceTo(lastPos) >= DISTANCE_THRESHOLD) {
+            playerMarkers.add(new MarkerEntry(new Vector3d(currentPos)));
+            if (playerMarkers.size() > MAX_MARKERS) {
+                playerMarkers.removeFirst();
+            }
+        }
+    }
+
+    public static List<MarkerEntry> getPlayerPath(UUID playerUuid) {
         return markerPositions.getOrDefault(playerUuid, new ArrayList<>());
     }
 }

@@ -1,13 +1,9 @@
 package io.github.jadedbay;
 
 import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.WorldMapTracker;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
-import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
 
 import javax.annotation.Nonnull;
 
@@ -26,9 +22,10 @@ public class MapTrailPlugin extends JavaPlugin {
         LOGGER.atInfo().log("Setting up plugin " + this.getName());
         this.getCommandRegistry().registerCommand(new ExampleCommand(this.getName(), this.getManifest().getVersion().toString()));
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, this::onWorldAdd);
+
     }
 
     private void onWorldAdd(AddWorldEvent event) {
-        event.getWorld().getWorldMapManager().addMarkerProvider("playerPath", new MapTrailMarkerProvider());
+        event.getWorld().getWorldMapManager().addMarkerProvider("playerPath", new PlayerPathMarkerProvider());
     }
 }
