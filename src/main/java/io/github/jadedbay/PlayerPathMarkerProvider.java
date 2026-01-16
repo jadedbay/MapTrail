@@ -58,9 +58,9 @@ public class PlayerPathMarkerProvider implements WorldMapManager.MarkerProvider 
         if (percentage < 0.1f) {
             return "MapTrail_4.png";
         } else if (percentage < 0.25f) {
-            return "MapTrail_6.png";
+            return "MapTrail_5.png";
         } else {
-            return "MapTrail_8.png";
+            return "MapTrail_6.png";
         }
     }
 }

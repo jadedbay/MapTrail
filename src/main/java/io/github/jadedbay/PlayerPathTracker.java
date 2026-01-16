@@ -37,8 +37,11 @@ public class PlayerPathTracker {
             return;
         }
 
-        Vector3d lastPos = markerPositions.get(playerUuid).getLast().position;
-        if (currentPos.distanceTo(lastPos) >= DISTANCE_THRESHOLD) {
+        Vector3d lastPos = playerMarkers.getLast().position;
+
+        double dx = currentPos.x - lastPos.x;
+        double dz = currentPos.z - lastPos.z;
+        if (dx * dx + dz * dz >= DISTANCE_THRESHOLD * DISTANCE_THRESHOLD) {
             playerMarkers.add(new MarkerEntry(new Vector3d(currentPos)));
             if (playerMarkers.size() > MAX_MARKERS) {
                 playerMarkers.removeFirst();
