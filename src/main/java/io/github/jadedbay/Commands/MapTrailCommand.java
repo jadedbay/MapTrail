@@ -15,14 +15,12 @@ import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
 
-/**
- * This is an example command that will simply print the name of the plugin in chat when used.
- */
 public class MapTrailCommand extends AbstractPlayerCommand {
     public MapTrailCommand(@Nonnull MapTrailPlugin plugin) {
         super("maptrail", "Configure map trail settings");
 
         this.addSubCommand(new MarkersSubCommand(plugin));
+        this.addSubCommand(new DistanceSubCommand(plugin));
     }
 
     @Override
@@ -45,13 +43,36 @@ class MarkersSubCommand extends AbstractPlayerCommand {
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = commandContext.get(valueArg);
 
-        if (value < 0) {
-            playerRef.sendMessage(Message.raw("Value must not be negative").color("#ff5555"));
+        if (value <= 0) {
+            playerRef.sendMessage(Message.raw("[MapTrail] Value must not be negative").color("#ff5555"));
             return;
         }
 
         plugin.getConfig().get().setMaxMarkers(value);
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color("#55ff55"));
+    }
+}
 
-        playerRef.sendMessage(Message.raw("Max markers set to: " + value).color("#55ff55"));
+class DistanceSubCommand extends AbstractPlayerCommand {
+    private final RequiredArg<Double> valueArg;
+    private final MapTrailPlugin plugin;
+
+    public DistanceSubCommand(MapTrailPlugin plugin) {
+        super("distance", "Set distance between markers");
+        this.plugin = plugin;
+        this.valueArg = this.withRequiredArg("value", "Distance between markers", ArgTypes.DOUBLE);
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        double value = commandContext.get(valueArg);
+
+        if (value <= 0) {
+            playerRef.sendMessage(Message.raw("[MapTrail] Value must be above 0").color("#ff5555"));
+            return;
+        }
+
+        plugin.getConfig().get().setDistanceThreshold(value);
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color("#55ff55"));
     }
 }

@@ -56,7 +56,8 @@ public class MapTrailPlugin extends JavaPlugin {
             PlayerTrailTracker.checkAndCreateMarker(
                     handler.getAuth().getUuid(),
                     movementPacket.absolutePosition,
-                    config.get().getMaxMarkers()
+                    config.get().getMaxMarkers(),
+                    config.get().getDistanceThreshold()
             );
         }
     }

@@ -24,14 +24,13 @@ public class PlayerTrailTracker {
     }
 
     private static final Map<UUID, List<MarkerEntry>> markers = new ConcurrentHashMap<>();
-    private static final double DISTANCE_THRESHOLD = 10.0;
 
-    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos, int maxMarkers) {
+    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos, int maxMarkers, double distanceThreshold) {
         if (currentPos == null) return;
 
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerUuid, _ -> new ArrayList<>());
 
-        if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position)) {
+        if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position, distanceThreshold)) {
             playerMarkers.add(new MarkerEntry(currentPos));
             if (playerMarkers.size() > maxMarkers) {
                 playerMarkers.removeFirst();
@@ -39,10 +38,10 @@ public class PlayerTrailTracker {
         }
     }
 
-    private static boolean reachedDistanceThreshold(Position currentPos, Position lastPos) {
+    private static boolean reachedDistanceThreshold(Position currentPos, Position lastPos, double distanceThreshold) {
         double dx = currentPos.x - lastPos.x;
         double dz = currentPos.z - lastPos.z;
-        return dx * dx + dz * dz >= DISTANCE_THRESHOLD * DISTANCE_THRESHOLD;
+        return dx * dx + dz * dz >= distanceThreshold * distanceThreshold;
     }
 
     public static List<MarkerEntry> getPlayerMarkers(UUID playerUuid) {
