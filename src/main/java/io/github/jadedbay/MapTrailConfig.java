@@ -17,4 +17,5 @@ public class MapTrailConfig {
     private int maxMarkers = 100;
 
     public int getMaxMarkers() { return maxMarkers; }
+    public void setMaxMarkers(int maxMarkers) { this.maxMarkers = maxMarkers; }
 }

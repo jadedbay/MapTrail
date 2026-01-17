@@ -11,7 +11,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
 import com.hypixel.hytale.server.core.util.Config;
-import io.github.jadedbay.Commands.ExampleCommand;
+import io.github.jadedbay.Commands.MapTrailCommand;
 import io.github.jadedbay.PlayerTrail.PlayerTrailMarkerProvider;
 import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
 
@@ -32,7 +32,7 @@ public class MapTrailPlugin extends JavaPlugin {
     protected void setup() {
         LOGGER.atInfo().log("Setting up plugin " + this.getName());
 
-        this.getCommandRegistry().registerCommand(new ExampleCommand(this.getName(), this.getManifest().getVersion().toString()));
+        this.getCommandRegistry().registerCommand(new MapTrailCommand(this));
 
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, this::onWorldAdd);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, this::onPlayerDisconnect);
@@ -59,5 +59,9 @@ public class MapTrailPlugin extends JavaPlugin {
                     config.get().getMaxMarkers()
             );
         }
+    }
+
+    public Config<MapTrailConfig> getConfig() {
+        return config;
     }
 }
