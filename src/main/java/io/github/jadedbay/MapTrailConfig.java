@@ -17,8 +17,7 @@ public class MapTrailConfig {
                     .add()
                     .build();
 
-    // Max amount of markers for each player shown at once
-    private int maxMarkers = 100;
+    private int maxMarkers = 80;
     private double distanceThreshold = 10.0f;
 
     public int getMaxMarkers() { return maxMarkers; }

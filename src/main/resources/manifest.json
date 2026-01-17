@@ -1,8 +1,8 @@
 {
     "Group": "jadedbay",
     "Name": "MapTrail",
-    "Version": "0.1.0",
-    "Description": "An example plugin for HyTale!",
+    "Version": "1.0.0",
+    "Description": "Adds a trail of markers to the map showing your recent path through the world",
     "Authors": [
         {
             "Name": "jadedbay"

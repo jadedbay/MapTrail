@@ -7,7 +7,6 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
-import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -42,13 +41,13 @@ class MarkersSubCommand extends AbstractPlayerCommand {
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = commandContext.get(valueArg);
-
         if (value <= 0) {
             playerRef.sendMessage(Message.raw("[MapTrail] Value must not be negative").color("#ff5555"));
             return;
         }
 
         plugin.getConfig().get().setMaxMarkers(value);
+        plugin.getConfig().save();
         playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color("#55ff55"));
     }
 }
@@ -73,6 +72,7 @@ class DistanceSubCommand extends AbstractPlayerCommand {
         }
 
         plugin.getConfig().get().setDistanceThreshold(value);
+        plugin.getConfig().save();
         playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color("#55ff55"));
     }
 }
