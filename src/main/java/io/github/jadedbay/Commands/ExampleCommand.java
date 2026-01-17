@@ -1,4 +1,4 @@
-package io.github.jadedbay;
+package io.github.jadedbay.Commands;
 
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;

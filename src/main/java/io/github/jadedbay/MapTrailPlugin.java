@@ -10,14 +10,23 @@ import com.hypixel.hytale.server.core.io.adapter.PacketAdapters;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
+import com.hypixel.hytale.server.core.util.Config;
+import io.github.jadedbay.Commands.ExampleCommand;
+import io.github.jadedbay.PlayerTrail.PlayerTrailMarkerProvider;
+import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
 
 import javax.annotation.Nonnull;
 
 public class MapTrailPlugin extends JavaPlugin {
 
+    private final Config<MapTrailConfig> config;
+
     static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
-    public MapTrailPlugin(@Nonnull JavaPluginInit init) {super(init);}
+    public MapTrailPlugin(@Nonnull JavaPluginInit init) {
+        super(init);
+        this.config = this.withConfig("MapTrail", MapTrailConfig.CODEC);
+    }
 
     @Override
     protected void setup() {
@@ -44,7 +53,11 @@ public class MapTrailPlugin extends JavaPlugin {
             PlayerAuthentication auth = handler.getAuth();
             if (auth == null) return;
 
-            PlayerTrailTracker.checkAndCreateMarker(handler.getAuth().getUuid(), movementPacket.absolutePosition);
+            PlayerTrailTracker.checkAndCreateMarker(
+                    handler.getAuth().getUuid(),
+                    movementPacket.absolutePosition,
+                    config.get().getMaxMarkers()
+            );
         }
     }
 }

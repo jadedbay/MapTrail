@@ -1,4 +1,4 @@
-package io.github.jadedbay;
+package io.github.jadedbay.PlayerTrail;
 
 import com.hypixel.hytale.protocol.Position;
 
@@ -25,16 +25,15 @@ public class PlayerTrailTracker {
 
     private static final Map<UUID, List<MarkerEntry>> markers = new ConcurrentHashMap<>();
     private static final double DISTANCE_THRESHOLD = 10.0;
-    private static final int MAX_MARKERS = 20;
 
-    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos) {
+    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos, int maxMarkers) {
         if (currentPos == null) return;
 
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerUuid, _ -> new ArrayList<>());
 
         if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position)) {
             playerMarkers.add(new MarkerEntry(currentPos));
-            if (playerMarkers.size() > MAX_MARKERS) {
+            if (playerMarkers.size() > maxMarkers) {
                 playerMarkers.removeFirst();
             }
         }

@@ -1,4 +1,4 @@
-package io.github.jadedbay;
+package io.github.jadedbay.PlayerTrail;
 
 import com.hypixel.hytale.protocol.Direction;
 import com.hypixel.hytale.protocol.Transform;
@@ -44,13 +44,10 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
     }
 
     private static String getMarkerTexture(int index, int markerCount) {
-        float percentage = (float)(index + 1) / (float)markerCount;
-        if (percentage < 0.15f) {
-            return "MapTrail_4.png";
-        } else if (percentage < 0.35f) {
-            return "MapTrail_5.png";
-        } else {
-            return "MapTrail_6.png";
-        }
+        float percentage = (float)(index + 1) / markerCount;
+
+        if (percentage < 0.15f) return "MapTrail_4.png";
+        if (percentage < 0.35f) return "MapTrail_5.png";
+        return "MapTrail_6.png";
     }
 }
