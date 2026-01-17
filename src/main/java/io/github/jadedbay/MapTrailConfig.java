@@ -3,6 +3,7 @@ package io.github.jadedbay;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
 
 public class MapTrailConfig {
     public static final BuilderCodec<MapTrailConfig> CODEC =
@@ -17,11 +18,14 @@ public class MapTrailConfig {
                     .add()
                     .build();
 
-    private int maxMarkers = 80;
-    private double distanceThreshold = 10.0f;
+    private int maxMarkers = 100;
+    private double distanceThreshold = 8.0f;
 
     public int getMaxMarkers() { return maxMarkers; }
-    public void setMaxMarkers(int maxMarkers) { this.maxMarkers = maxMarkers; }
+    public void setMaxMarkers(int maxMarkers) {
+        this.maxMarkers = maxMarkers;
+        PlayerTrailTracker.updateMaxMarkers(maxMarkers);
+    }
 
     public double getDistanceThreshold() { return distanceThreshold; }
     public void setDistanceThreshold(double distanceThreshold) { this.distanceThreshold = distanceThreshold; }

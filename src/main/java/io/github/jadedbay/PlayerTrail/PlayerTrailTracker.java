@@ -32,7 +32,7 @@ public class PlayerTrailTracker {
 
         if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position, distanceThreshold)) {
             playerMarkers.add(new MarkerEntry(currentPos));
-            if (playerMarkers.size() > maxMarkers) {
+            while (playerMarkers.size() > maxMarkers) {
                 playerMarkers.removeFirst();
             }
         }
@@ -50,5 +50,13 @@ public class PlayerTrailTracker {
 
     public static void removePlayerPath(UUID playerUuid) {
         markers.remove(playerUuid);
+    }
+
+    public static void updateMaxMarkers(int newMaxMarkers) {
+        for (List<MarkerEntry> playerMarkers : markers.values()) {
+            while (playerMarkers.size() > newMaxMarkers) {
+                playerMarkers.removeFirst();
+            }
+        }
     }
 }

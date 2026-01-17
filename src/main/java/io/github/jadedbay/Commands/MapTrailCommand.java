@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 
 public class MapTrailCommand extends AbstractPlayerCommand {
     public MapTrailCommand(@Nonnull MapTrailPlugin plugin) {
@@ -24,7 +25,7 @@ public class MapTrailCommand extends AbstractPlayerCommand {
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
     }
 }
 
@@ -42,13 +43,13 @@ class MarkersSubCommand extends AbstractPlayerCommand {
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = commandContext.get(valueArg);
         if (value <= 0) {
-            playerRef.sendMessage(Message.raw("[MapTrail] Value must not be negative").color("#ff5555"));
+            playerRef.sendMessage(Message.raw("[MapTrail] Value must not be negative").color(Color.RED));
             return;
         }
 
         plugin.getConfig().get().setMaxMarkers(value);
         plugin.getConfig().save();
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color("#55ff55"));
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color(Color.GREEN));
     }
 }
 
@@ -67,12 +68,12 @@ class DistanceSubCommand extends AbstractPlayerCommand {
         double value = commandContext.get(valueArg);
 
         if (value <= 0) {
-            playerRef.sendMessage(Message.raw("[MapTrail] Value must be above 0").color("#ff5555"));
+            playerRef.sendMessage(Message.raw("[MapTrail] Value must be above 0").color(Color.RED));
             return;
         }
 
         plugin.getConfig().get().setDistanceThreshold(value);
         plugin.getConfig().save();
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color("#55ff55"));
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.GREEN));
     }
 }
