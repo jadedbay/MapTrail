@@ -1,6 +1,6 @@
 # MapTrail
 
-A plugin for Hytale, adds a trail of markers to the map showing your recent path through the world.
+A plugin for **Hytale**, adds a trail of markers to the map showing your recent path through the world.
 
 *Github*: https://github.com/jadedbay/MapTrail
 
@@ -10,10 +10,10 @@ A plugin for Hytale, adds a trail of markers to the map showing your recent path
 3. Restart the server
 
 ## Features
-- <strong>Trail Markers</strong> - Adds markers to the map showing your recent path
-- <strong>Individual Trail</strong> - Each player can only see their own trail
-- <strong>Customizable</strong> - Use commands to adjust how the trail looks
-- <strong>Optimization</strong> - Removes player's markers from memory when they disconnect
+- **Trail Markers** - Adds markers to the map showing your recent path
+- **Individual Trail** - Each player can only see their own trail
+- **Customizable** - Use commands to adjust how the trail looks
+- **Optimization** - Removes player's markers from memory when they disconnect
 
 ## Commands
 
