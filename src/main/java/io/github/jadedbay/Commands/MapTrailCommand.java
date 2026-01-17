@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayer
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import io.github.jadedbay.MapTrailConfig;
 import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
@@ -19,6 +20,7 @@ public class MapTrailCommand extends AbstractPlayerCommand {
     public MapTrailCommand(@Nonnull MapTrailPlugin plugin) {
         super("maptrail", "Configure map trail settings");
 
+        this.addSubCommand(new ConfigSubCommand(plugin));
         this.addSubCommand(new MarkersSubCommand(plugin));
         this.addSubCommand(new DistanceSubCommand(plugin));
     }
@@ -75,5 +77,25 @@ class DistanceSubCommand extends AbstractPlayerCommand {
         plugin.getConfig().get().setDistanceThreshold(value);
         plugin.getConfig().save();
         playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.GREEN));
+    }
+}
+
+class ConfigSubCommand extends AbstractPlayerCommand {
+    private final MapTrailPlugin plugin;
+
+    public ConfigSubCommand(MapTrailPlugin plugin) {
+        super("config", "View current config values");
+        this.plugin = plugin;
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        MapTrailConfig config = plugin.getConfig().get();
+
+        playerRef.sendMessage(Message.raw(
+                "[MapTrail] Config Values: \n" +
+                "   MaxMarkers = " + config.getMaxMarkers() + "\n" +
+                "   DistanceThreshold = " + config.getDistanceThreshold()
+        ).color(Color.YELLOW));
     }
 }
