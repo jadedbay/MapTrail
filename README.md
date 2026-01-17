@@ -8,7 +8,7 @@ A plugin for **Hytale**, adds a trail of markers to the map showing your recent 
 
 ## Installation
 1. Download `MapTrail-x.x.x.jar` from [CurseForge](https://www.curseforge.com/hytale/mods/maptrail) or [Releases](https://github.com/jadedbay/MapTrail/releases)
-2. Place in your `mods/` folder
+2. Place in your `Mods/` folder
 3. Enable it in your world settings
 
 ## Features
