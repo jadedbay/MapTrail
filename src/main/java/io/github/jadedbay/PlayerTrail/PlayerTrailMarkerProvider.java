@@ -18,6 +18,8 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
 
     @Override
     public void update(@Nonnull World world, @Nonnull GameplayConfig gameplayConfig, @Nonnull WorldMapTracker tracker, int chunkViewRadius, int playerChunkX, int playerChunkZ) {
+        if (!tracker.shouldUpdatePlayerMarkers()) return;
+
         Player player = tracker.getPlayer();
         UUID playerUuid = player.getUuid();
 
