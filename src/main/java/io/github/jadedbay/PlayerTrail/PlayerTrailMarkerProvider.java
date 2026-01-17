@@ -49,7 +49,7 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
         float percentage = (float)(index + 1) / markerCount;
 
         if (percentage < 0.15f) return "MapTrail_4.png";
-        if (percentage < 0.35f) return "MapTrail_5.png";
+        if (percentage < 0.45f) return "MapTrail_5.png";
         return "MapTrail_6.png";
     }
 }

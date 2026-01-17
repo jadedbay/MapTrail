@@ -2,10 +2,12 @@
 
 A plugin for **Hytale**, adds a trail of markers to the map showing your recent path through the world.
 
+*CurseForge*: https://www.curseforge.com/hytale/mods/maptrail
+
 *Github*: https://github.com/jadedbay/MapTrail
 
 ## Installation
-1. Download `MapTrail-x.x.x.jar` from [Releases](https://github.com/jadedbay/MapTrail/releases)
+1. Download `MapTrail-x.x.x.jar` from [CurseForge](https://www.curseforge.com/hytale/mods/maptrail) or [Releases](https://github.com/jadedbay/MapTrail/releases)
 2. Place in your server's `mods/` folder
 3. Restart the server
 
