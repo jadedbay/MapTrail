@@ -11,24 +11,23 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.UUID;
 
-public class PlayerPathMarkerProvider implements WorldMapManager.MarkerProvider {
-    public static final PlayerPathMarkerProvider INSTANCE = new PlayerPathMarkerProvider();
+public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider {
+    public static final PlayerTrailMarkerProvider INSTANCE = new PlayerTrailMarkerProvider();
 
     @Override
     public void update(@Nonnull World world, @Nonnull GameplayConfig gameplayConfig, @Nonnull WorldMapTracker tracker, int chunkViewRadius, int playerChunkX, int playerChunkZ) {
         Player player = tracker.getPlayer();
+        UUID playerUuid = player.getUuid();
 
-        if (!tracker.shouldUpdatePlayerMarkers()) return;
-
-        List<PlayerPathTracker.MarkerEntry> pathMarkers = PlayerPathTracker.getPlayerPath(player.getUuid());
-        for (int i = 0; i < pathMarkers.size(); i++) {
-            final PlayerPathTracker.MarkerEntry markerEntry = pathMarkers.get(i);
-
-            final String markerTexture = getMarkerTexture(i, pathMarkers.size());
+        List<PlayerTrailTracker.MarkerEntry> playerMarkers = PlayerTrailTracker.getPlayerMarkers(playerUuid);
+        for (int i = 0; i < playerMarkers.size(); i++) {
+            final PlayerTrailTracker.MarkerEntry markerEntry = playerMarkers.get(i);
+            final String markerTexture = getMarkerTexture(i, playerMarkers.size());
 
             final MapMarker marker = new MapMarker(
-                    markerEntry.getMarkerId(player) + "_" + markerTexture,
+                    markerEntry.getMarkerId(playerUuid) + "_" + markerTexture,
                     "",
                     markerTexture,
                     new Transform(markerEntry.position, new Direction()),
