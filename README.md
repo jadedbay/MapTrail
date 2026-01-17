@@ -17,6 +17,6 @@ A plugin for Hytale, adds a trail of markers to the map showing your recent path
 
 ## Commands
 
-`/maptrail marker <value>` - Sets the maximum amount of markers saved and displayed per player (default: 100)
+`/maptrail markers <value>` - Sets the maximum amount of markers saved and displayed per player (default: 100)
 
 `/maptrail distance <value>` - Sets the distance between each marker (default: 8.0)
