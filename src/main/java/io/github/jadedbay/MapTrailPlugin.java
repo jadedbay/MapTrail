@@ -18,14 +18,13 @@ import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
 import javax.annotation.Nonnull;
 
 public class MapTrailPlugin extends JavaPlugin {
-
-    private final Config<MapTrailConfig> config;
+    private static Config<MapTrailConfig> config;
 
     static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
     public MapTrailPlugin(@Nonnull JavaPluginInit init) {
         super(init);
-        this.config = this.withConfig("MapTrail", MapTrailConfig.CODEC);
+        config = this.withConfig("MapTrail", MapTrailConfig.CODEC);
     }
 
     @Override
@@ -55,14 +54,12 @@ public class MapTrailPlugin extends JavaPlugin {
 
             PlayerTrailTracker.checkAndCreateMarker(
                     handler.getAuth().getUuid(),
-                    movementPacket.absolutePosition,
-                    config.get().getMaxMarkers(),
-                    config.get().getDistanceThreshold()
+                    movementPacket.absolutePosition
             );
         }
     }
 
-    public Config<MapTrailConfig> getConfig() {
+    public static Config<MapTrailConfig> getConfig() {
         return config;
     }
 }

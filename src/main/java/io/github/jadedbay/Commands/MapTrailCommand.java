@@ -80,6 +80,31 @@ class DistanceSubCommand extends AbstractPlayerCommand {
     }
 }
 
+class SizeRangeSubCommand extends AbstractPlayerCommand {
+    private final RequiredArg<Double> smallArg;
+    private final RequiredArg<Double> mediumArg;
+    private final MapTrailPlugin plugin;
+
+    public SizeRangeSubCommand(MapTrailPlugin plugin) {
+        super("sizerange", "View current config values");
+        this.smallArg = this.withRequiredArg("small", "Percentage of markers that will small", ArgTypes.DOUBLE);
+        this.mediumArg = this.withRequiredArg("medium", "Percentage of markers that will be medium", ArgTypes.DOUBLE);
+        this.plugin = plugin;
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        MapTrailConfig config = plugin.getConfig().get();
+
+        playerRef.sendMessage(Message.raw(
+                "[MapTrail] Config Values: \n" +
+                        "   MaxMarkers = " + config.getMaxMarkers() + "\n" +
+                        "   DistanceThreshold = " + config.getDistanceThreshold()
+        ).color(Color.YELLOW));
+    }
+}
+
+
 class ConfigSubCommand extends AbstractPlayerCommand {
     private final MapTrailPlugin plugin;
 

@@ -16,10 +16,20 @@ public class MapTrailConfig {
                             (config, value) -> config.distanceThreshold = value,
                             config -> config.distanceThreshold)
                     .add()
+                    .append(new KeyedCodec<Double>("SmallThreshold", Codec.DOUBLE),
+                            (config, value) -> config.distanceThreshold = value,
+                            config -> config.distanceThreshold)
+                    .add()
+                    .append(new KeyedCodec<Double>("MediumThreshold", Codec.DOUBLE),
+                            (config, value) -> config.distanceThreshold = value,
+                            config -> config.distanceThreshold)
+                    .add()
                     .build();
 
-    private int maxMarkers = 100;
+    private int maxMarkers = 80;
     private double distanceThreshold = 8.0f;
+    private double smallThreshold = 0.15f;
+    private double mediumThreshold = 0.45f;
 
     public int getMaxMarkers() { return maxMarkers; }
     public void setMaxMarkers(int maxMarkers) {
