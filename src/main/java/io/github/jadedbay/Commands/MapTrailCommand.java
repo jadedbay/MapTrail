@@ -23,7 +23,7 @@ public class MapTrailCommand extends AbstractPlayerCommand {
         this.addSubCommand(new ConfigSubCommand());
         this.addSubCommand(new MarkersSubCommand());
         this.addSubCommand(new DistanceSubCommand());
-        this.addSubCommand(new SizeRatioSubCommand());
+        this.addSubCommand(new SizeSubCommand());
     }
 
     @Override
@@ -70,34 +70,40 @@ class DistanceSubCommand extends AbstractPlayerCommand {
     }
 }
 
-class SizeRatioSubCommand extends AbstractPlayerCommand {
-    private final RequiredArg<Double> smallArg;
-    private final RequiredArg<Double> mediumArg;
+enum MarkerSize {
+    SMALL,
+    MEDIUM,
+}
 
-    public SizeRatioSubCommand() {
-        super("sizeratio", "Set thresholds between marker sizes");
-        this.smallArg = this.withRequiredArg("small", "Percentage of markers that will size small", ArgTypes.DOUBLE);
-        this.mediumArg = this.withRequiredArg("medium", "Percentage of markers that will be size medium", ArgTypes.DOUBLE);
+class SizeSubCommand extends AbstractPlayerCommand {
+    private final RequiredArg<MarkerSize> sizeArg;
+    private final RequiredArg<Double> valueArg;
+
+    public SizeSubCommand() {
+        super("size", "Set threshold between marker sizes");
+        this.sizeArg = this.withRequiredArg("size", "Marker size to change", ArgTypes.forEnum("size", MarkerSize.class));
+        this.valueArg = this.withRequiredArg("value", "Percentage of markers of size", ArgTypes.DOUBLE);
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        double small = Math.max(0.0, Math.min(1.0, commandContext.get(smallArg)));
-        double medium = Math.max(0.0, Math.min(1.0, commandContext.get(mediumArg)));
+        MarkerSize size = commandContext.get(sizeArg);
+        double value = Math.max(0.0, Math.min(1.0, commandContext.get(valueArg)));
 
         MapTrailConfig config = MapTrailPlugin.getConfig().get();
-        config.setSizeSmallThreshold(small);
-        config.setSizeMediumThreshold(medium);
-
+        switch (size) {
+            case SMALL:
+                config.setSizeSmallThreshold(value);
+                break;
+            case MEDIUM:
+                config.setSizeMediumThreshold(value);
+                break;
+        }
         MapTrailPlugin.getConfig().save();
 
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Size Thresholds\n" +
-                "Small: " + small + "\n" +
-                "Medium: " + medium + "\n"
-        ).color(Color.YELLOW));
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Size (" + size +"): " + value).color(Color.YELLOW));
     }
 }
-
 
 class ConfigSubCommand extends AbstractPlayerCommand {
     public ConfigSubCommand() {
@@ -111,7 +117,10 @@ class ConfigSubCommand extends AbstractPlayerCommand {
         playerRef.sendMessage(Message.raw(
                 "[MapTrail] Config Values: \n" +
                 "   MaxMarkers = " + config.getMaxMarkers() + "\n" +
-                "   DistanceThreshold = " + config.getDistanceThreshold()
+                "   DistanceThreshold = " + config.getDistanceThreshold() + "\n" +
+                "   Size Thresholds:\n" +
+                "       Small = " + config.getSizeSmallThreshold() + "\n" +
+                "       Medium = " + config.getSizeMediumThreshold()
         ).color(Color.YELLOW));
     }
 }
