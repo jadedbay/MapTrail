@@ -1,6 +1,7 @@
 package io.github.jadedbay.PlayerTrail;
 
 import com.hypixel.hytale.protocol.Position;
+import io.github.jadedbay.MapTrailPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +26,22 @@ public class PlayerTrailTracker {
 
     private static final Map<UUID, List<MarkerEntry>> markers = new ConcurrentHashMap<>();
 
-    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos, int maxMarkers, double distanceThreshold) {
+    public static void checkAndCreateMarker(UUID playerUuid, Position currentPos) {
         if (currentPos == null) return;
 
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerUuid, _ -> new ArrayList<>());
 
-        if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position, distanceThreshold)) {
+        if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position)) {
             playerMarkers.add(new MarkerEntry(currentPos));
-            while (playerMarkers.size() > maxMarkers) {
+            while (playerMarkers.size() > MapTrailPlugin.getConfig().get().getMaxMarkers()) {
                 playerMarkers.removeFirst();
             }
         }
     }
 
-    private static boolean reachedDistanceThreshold(Position currentPos, Position lastPos, double distanceThreshold) {
+    private static boolean reachedDistanceThreshold(Position currentPos, Position lastPos) {
+        double distanceThreshold = MapTrailPlugin.getConfig().get().getDistanceThreshold();
+
         double dx = currentPos.x - lastPos.x;
         double dz = currentPos.z - lastPos.z;
         return dx * dx + dz * dz >= distanceThreshold * distanceThreshold;

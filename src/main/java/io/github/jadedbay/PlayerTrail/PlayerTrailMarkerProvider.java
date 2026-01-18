@@ -8,6 +8,8 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.universe.world.WorldMapTracker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
+import io.github.jadedbay.MapTrailConfig;
+import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -48,8 +50,9 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
     private static String getMarkerTexture(int index, int markerCount) {
         float percentage = (float)(index + 1) / markerCount;
 
-        if (percentage < 0.15f) return "MapTrail_4.png";
-        if (percentage < 0.45f) return "MapTrail_5.png";
+        MapTrailConfig config = MapTrailPlugin.getConfig().get();
+        if (percentage < config.getSizeSmallThreshold()) return "MapTrail_4.png";
+        if (percentage < config.getSizeMediumThreshold()) return "MapTrail_5.png";
         return "MapTrail_6.png";
     }
 }
