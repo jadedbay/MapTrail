@@ -17,105 +17,96 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 
 public class MapTrailCommand extends AbstractPlayerCommand {
-    public MapTrailCommand(@Nonnull MapTrailPlugin plugin) {
+    public MapTrailCommand() {
         super("maptrail", "Configure map trail settings");
 
-        this.addSubCommand(new ConfigSubCommand(plugin));
-        this.addSubCommand(new MarkersSubCommand(plugin));
-        this.addSubCommand(new DistanceSubCommand(plugin));
+        this.addSubCommand(new ConfigSubCommand());
+        this.addSubCommand(new MarkersSubCommand());
+        this.addSubCommand(new DistanceSubCommand());
+        this.addSubCommand(new SizeRatioSubCommand());
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance|sizeratio>").color(Color.YELLOW));
     }
 }
 
 class MarkersSubCommand extends AbstractPlayerCommand {
     private final RequiredArg<Integer> valueArg;
-    private final MapTrailPlugin plugin;
 
-    public MarkersSubCommand(MapTrailPlugin plugin) {
+    public MarkersSubCommand() {
         super("markers", "Set max number of trail markers displayed on map at once");
-        this.plugin = plugin;
         this.valueArg = this.withRequiredArg("value", "Max number of markers", ArgTypes.INTEGER);
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        int value = commandContext.get(valueArg);
-        if (value <= 0) {
-            playerRef.sendMessage(Message.raw("[MapTrail] Value must not be negative").color(Color.RED));
-            return;
-        }
+        int value = Math.max(0, commandContext.get(valueArg));
 
-        plugin.getConfig().get().setMaxMarkers(value);
-        plugin.getConfig().save();
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color(Color.GREEN));
+        MapTrailPlugin.getConfig().get().setMaxMarkers(value);
+        MapTrailPlugin.getConfig().save();
+
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color(Color.YELLOW));
     }
 }
 
 class DistanceSubCommand extends AbstractPlayerCommand {
     private final RequiredArg<Double> valueArg;
-    private final MapTrailPlugin plugin;
 
-    public DistanceSubCommand(MapTrailPlugin plugin) {
+    public DistanceSubCommand() {
         super("distance", "Set distance between markers");
-        this.plugin = plugin;
         this.valueArg = this.withRequiredArg("value", "Distance between markers", ArgTypes.DOUBLE);
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        double value = commandContext.get(valueArg);
+        double value = Math.max(0.1, commandContext.get(valueArg));
 
-        if (value <= 0) {
-            playerRef.sendMessage(Message.raw("[MapTrail] Value must be above 0").color(Color.RED));
-            return;
-        }
+        MapTrailPlugin.getConfig().get().setDistanceThreshold(value);
+        MapTrailPlugin.getConfig().save();
 
-        plugin.getConfig().get().setDistanceThreshold(value);
-        plugin.getConfig().save();
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.GREEN));
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.YELLOW));
     }
 }
 
-class SizeRangeSubCommand extends AbstractPlayerCommand {
+class SizeRatioSubCommand extends AbstractPlayerCommand {
     private final RequiredArg<Double> smallArg;
     private final RequiredArg<Double> mediumArg;
-    private final MapTrailPlugin plugin;
 
-    public SizeRangeSubCommand(MapTrailPlugin plugin) {
-        super("sizerange", "View current config values");
-        this.smallArg = this.withRequiredArg("small", "Percentage of markers that will small", ArgTypes.DOUBLE);
-        this.mediumArg = this.withRequiredArg("medium", "Percentage of markers that will be medium", ArgTypes.DOUBLE);
-        this.plugin = plugin;
+    public SizeRatioSubCommand() {
+        super("sizeratio", "Set thresholds between marker sizes");
+        this.smallArg = this.withRequiredArg("small", "Percentage of markers that will size small", ArgTypes.DOUBLE);
+        this.mediumArg = this.withRequiredArg("medium", "Percentage of markers that will be size medium", ArgTypes.DOUBLE);
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        MapTrailConfig config = plugin.getConfig().get();
+        double small = Math.max(0.0, Math.min(1.0, commandContext.get(smallArg)));
+        double medium = Math.max(0.0, Math.min(1.0, commandContext.get(mediumArg)));
 
-        playerRef.sendMessage(Message.raw(
-                "[MapTrail] Config Values: \n" +
-                        "   MaxMarkers = " + config.getMaxMarkers() + "\n" +
-                        "   DistanceThreshold = " + config.getDistanceThreshold()
+        MapTrailConfig config = MapTrailPlugin.getConfig().get();
+        config.setSizeSmallThreshold(small);
+        config.setSizeMediumThreshold(medium);
+
+        MapTrailPlugin.getConfig().save();
+
+        playerRef.sendMessage(Message.raw("[MapTrail] Set Size Thresholds\n" +
+                "Small: " + small + "\n" +
+                "Medium: " + medium + "\n"
         ).color(Color.YELLOW));
     }
 }
 
 
 class ConfigSubCommand extends AbstractPlayerCommand {
-    private final MapTrailPlugin plugin;
-
-    public ConfigSubCommand(MapTrailPlugin plugin) {
+    public ConfigSubCommand() {
         super("config", "View current config values");
-        this.plugin = plugin;
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        MapTrailConfig config = plugin.getConfig().get();
+        MapTrailConfig config = MapTrailPlugin.getConfig().get();
 
         playerRef.sendMessage(Message.raw(
                 "[MapTrail] Config Values: \n" +

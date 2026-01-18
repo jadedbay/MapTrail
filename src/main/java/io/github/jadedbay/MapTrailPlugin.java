@@ -31,7 +31,7 @@ public class MapTrailPlugin extends JavaPlugin {
     protected void setup() {
         LOGGER.atInfo().log("Setting up plugin " + this.getName());
 
-        this.getCommandRegistry().registerCommand(new MapTrailCommand(this));
+        this.getCommandRegistry().registerCommand(new MapTrailCommand());
 
         this.getEventRegistry().registerGlobal(AddWorldEvent.class, this::onWorldAdd);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, this::onPlayerDisconnect);
