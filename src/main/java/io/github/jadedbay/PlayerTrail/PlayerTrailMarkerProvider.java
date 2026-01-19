@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.universe.world.WorldMapTracker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
 import io.github.jadedbay.MapTrailConfig;
 import io.github.jadedbay.MapTrailPlugin;
+import io.github.jadedbay.Util.ReflectionUtil;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,7 +21,7 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
 
     @Override
     public void update(@Nonnull World world, @Nonnull GameplayConfig gameplayConfig, @Nonnull WorldMapTracker tracker, int chunkViewRadius, int playerChunkX, int playerChunkZ) {
-        if (!tracker.shouldUpdatePlayerMarkers()) return;
+        if (Boolean.FALSE.equals(ReflectionUtil.getPrivateField(tracker, "clientHasWorldMapVisible", Boolean.class))) return;
 
         Player player = tracker.getPlayer();
         UUID playerUuid = player.getUuid();
