@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 public class MapTrailPlugin extends JavaPlugin {
     private static Config<MapTrailConfig> config;
 
-    static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
+    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
     public MapTrailPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -62,5 +62,9 @@ public class MapTrailPlugin extends JavaPlugin {
 
     public static Config<MapTrailConfig> getConfig() {
         return config;
+    }
+
+    public static HytaleLogger logger() {
+        return LOGGER;
     }
 }
