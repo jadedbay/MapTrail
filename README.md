@@ -15,7 +15,7 @@ A plugin for **Hytale**, adds a trail of markers to the map showing your recent 
 - Adds markers to the map showing your recent path
 - Each player can only see their own trail
 - Use commands to adjust how the trail looks
-- Removes player's markers from memory when they disconnect
+- Removes player's markers when they disconnect
 
 ## Commands
 
