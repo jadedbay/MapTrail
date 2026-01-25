@@ -1,4 +1,4 @@
-package io.github.jadedbay;
+package io.github.jadedbay.Config;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;

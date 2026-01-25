@@ -1,6 +1,7 @@
 package io.github.jadedbay.PlayerTrail;
 
 import com.hypixel.hytale.protocol.Position;
+import io.github.jadedbay.Config.PlayerConfigManager;
 import io.github.jadedbay.MapTrailPlugin;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class PlayerTrailTracker {
     private static final Map<UUID, List<MarkerEntry>> markers = new ConcurrentHashMap<>();
 
     public static void checkAndCreateMarker(UUID playerUuid, Position currentPos) {
+        if (!MapTrailPlugin.getPlayerConfig(playerUuid).getEnabled()) return;
         if (currentPos == null) return;
 
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerUuid, _ -> new ArrayList<>());

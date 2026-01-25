@@ -10,7 +10,7 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayer
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import io.github.jadedbay.MapTrailConfig;
+import io.github.jadedbay.Config.MapTrailConfig;
 import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,6 @@ public class MapTrailCommand extends AbstractPlayerCommand {
         this.addSubCommand(new ConfigSubCommand());
         this.addSubCommand(new MarkersSubCommand());
         this.addSubCommand(new DistanceSubCommand());
-        this.addSubCommand(new SizeSubCommand());
     }
 
     @Override
@@ -67,41 +66,6 @@ class DistanceSubCommand extends AbstractPlayerCommand {
         MapTrailPlugin.getConfig().save();
 
         playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.YELLOW));
-    }
-}
-
-enum MarkerSize {
-    SMALL,
-    MEDIUM,
-}
-
-class SizeSubCommand extends AbstractPlayerCommand {
-    private final RequiredArg<MarkerSize> sizeArg;
-    private final RequiredArg<Double> valueArg;
-
-    public SizeSubCommand() {
-        super("size", "Set threshold between marker sizes");
-        this.sizeArg = this.withRequiredArg("size", "Marker size to change", ArgTypes.forEnum("size", MarkerSize.class));
-        this.valueArg = this.withRequiredArg("value", "Percentage of markers of size", ArgTypes.DOUBLE);
-    }
-
-    @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        MarkerSize size = commandContext.get(sizeArg);
-        double value = Math.max(0.0, Math.min(1.0, commandContext.get(valueArg)));
-
-        MapTrailConfig config = MapTrailPlugin.getConfig().get();
-        switch (size) {
-            case SMALL:
-                config.setSizeSmallThreshold(value);
-                break;
-            case MEDIUM:
-                config.setSizeMediumThreshold(value);
-                break;
-        }
-        MapTrailPlugin.getConfig().save();
-
-        playerRef.sendMessage(Message.raw("[MapTrail] Set Size (" + size +"): " + value).color(Color.YELLOW));
     }
 }
 
