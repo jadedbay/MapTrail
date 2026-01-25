@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class PlayerConfigManager {
     private final Path configDirectory;
@@ -35,10 +36,17 @@ public class PlayerConfigManager {
         if (config == null) { config.save().join(); }
     }
 
-    public PlayerConfig getConfig(UUID playerId) {
+    public Config<PlayerConfig> getConfig(UUID playerId) {
         Config<PlayerConfig> config = configCache.get(playerId);
         if (config == null) { throw new IllegalStateException("Config not loaded for player: " + playerId); }
 
-        return config.get();
+        return config;
+    }
+
+    public void updateConfig(UUID playerId, Consumer<PlayerConfig> consumer) {
+        Config<PlayerConfig> config = configCache.get(playerId);
+        if (config == null) { throw new IllegalStateException("Config not loaded for player: " + playerId); }
+        consumer.accept(config.get());
+        config.save();
     }
 }

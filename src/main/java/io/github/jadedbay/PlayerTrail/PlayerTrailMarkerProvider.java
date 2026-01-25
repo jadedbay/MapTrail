@@ -3,7 +3,6 @@ package io.github.jadedbay.PlayerTrail;
 import com.hypixel.hytale.protocol.Direction;
 import com.hypixel.hytale.protocol.Transform;
 import com.hypixel.hytale.protocol.packets.worldmap.MapMarker;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.WorldMapTracker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
@@ -20,20 +19,20 @@ public class PlayerTrailMarkerProvider implements WorldMapManager.MarkerProvider
 
     @Override
     public void update(@Nonnull World world, @Nonnull MapMarkerTracker mapMarkerTracker, int chunkViewRadius, int playerChunkX, int playerChunkZ) {
+        UUID playerId = mapMarkerTracker.getPlayer().getUuid();
+        if (!MapTrailPlugin.getPlayerConfig(playerId).get().getEnabled()) return;
+
         WorldMapTracker worldMapTracker = ReflectionUtil.getPrivateField(mapMarkerTracker, "worldMapTracker", WorldMapTracker.class, MapMarkerTracker.class);
         if (Boolean.FALSE.equals(ReflectionUtil.getPrivateField(worldMapTracker, "clientHasWorldMapVisible", Boolean.class, WorldMapTracker.class))) return;
 
-        Player player = mapMarkerTracker.getPlayer();
-        UUID playerUuid = player.getUuid();
-
-        List<PlayerTrailTracker.MarkerEntry> playerMarkers = PlayerTrailTracker.getPlayerMarkers(playerUuid);
+        List<PlayerTrailTracker.MarkerEntry> playerMarkers = PlayerTrailTracker.getPlayerMarkers(playerId);
         for (int i = 0; i < playerMarkers.size(); i++) {
             final PlayerTrailTracker.MarkerEntry markerEntry = playerMarkers.get(i);
 //            final String markerTexture = getMarkerTextureLength(i, playerMarkers.size());
             final String markerTexture = getMarkerTextureHeight(markerEntry.position.y);
 
             final MapMarker marker = new MapMarker(
-                    markerEntry.getMarkerId(playerUuid) + "_" + markerTexture,
+                    markerEntry.getMarkerId(playerId) + "_" + markerTexture,
                     "",
                     markerTexture,
                     new Transform(markerEntry.position, new Direction()),

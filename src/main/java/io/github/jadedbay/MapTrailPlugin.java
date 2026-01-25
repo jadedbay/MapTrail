@@ -11,7 +11,6 @@ import com.hypixel.hytale.server.core.io.adapter.PacketAdapters;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
-import com.hypixel.hytale.server.core.util.BsonUtil;
 import com.hypixel.hytale.server.core.util.Config;
 import io.github.jadedbay.Commands.MapTrailCommand;
 import io.github.jadedbay.Config.MapTrailConfig;
@@ -19,14 +18,9 @@ import io.github.jadedbay.Config.PlayerConfig;
 import io.github.jadedbay.Config.PlayerConfigManager;
 import io.github.jadedbay.PlayerTrail.PlayerTrailMarkerProvider;
 import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
-import org.bson.BsonDocument;
-import org.bson.BsonString;
 
 import javax.annotation.Nonnull;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class MapTrailPlugin extends JavaPlugin {
     private static Config<MapTrailConfig> config;
@@ -83,7 +77,7 @@ public class MapTrailPlugin extends JavaPlugin {
     }
 
     public static Config<MapTrailConfig> getConfig() { return config; }
-    public static PlayerConfig getPlayerConfig(UUID playerId) {
+    public static Config<PlayerConfig> getPlayerConfig(UUID playerId) {
         return playerConfig.getConfig(playerId);
     }
 }

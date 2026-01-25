@@ -28,7 +28,6 @@ public class PlayerTrailTracker {
     private static final Map<UUID, List<MarkerEntry>> markers = new ConcurrentHashMap<>();
 
     public static void checkAndCreateMarker(UUID playerUuid, Position currentPos) {
-        if (!MapTrailPlugin.getPlayerConfig(playerUuid).getEnabled()) return;
         if (currentPos == null) return;
 
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerUuid, _ -> new ArrayList<>());

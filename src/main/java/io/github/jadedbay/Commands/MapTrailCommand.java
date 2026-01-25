@@ -10,7 +10,9 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayer
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.Config;
 import io.github.jadedbay.Config.MapTrailConfig;
+import io.github.jadedbay.Config.PlayerConfig;
 import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
@@ -21,13 +23,47 @@ public class MapTrailCommand extends AbstractPlayerCommand {
         super("maptrail", "Configure map trail settings");
 
         this.addSubCommand(new ConfigSubCommand());
+
+        this.addSubCommand(new EnableSubCommand());
+        this.addSubCommand(new DisableSubCommand());
+
         this.addSubCommand(new MarkersSubCommand());
         this.addSubCommand(new DistanceSubCommand());
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance|sizeratio>").color(Color.YELLOW));
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
+    }
+}
+
+class EnableSubCommand extends AbstractPlayerCommand {
+    public EnableSubCommand() {
+        super("enable", "Enable the map trail markers");
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        config.get().setEnabled(true);
+        config.save();
+
+        playerRef.sendMessage(Message.raw("[MapTrail] Player map trail: Enabled").color(Color.YELLOW));
+    }
+}
+
+class DisableSubCommand extends AbstractPlayerCommand {
+    public DisableSubCommand() {
+        super("disable", "Disable the map trail markers");
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        config.get().setEnabled(false);
+        config.save();
+
+        playerRef.sendMessage(Message.raw("[MapTrail] Player map trail: Disable").color(Color.YELLOW));
     }
 }
 
@@ -43,8 +79,9 @@ class MarkersSubCommand extends AbstractPlayerCommand {
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = Math.max(0, commandContext.get(valueArg));
 
-        MapTrailPlugin.getConfig().get().setMaxMarkers(value);
-        MapTrailPlugin.getConfig().save();
+        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        config.get().setMarkerCount(value);
+        config.save();
 
         playerRef.sendMessage(Message.raw("[MapTrail] Set Max Markers: " + value).color(Color.YELLOW));
     }
