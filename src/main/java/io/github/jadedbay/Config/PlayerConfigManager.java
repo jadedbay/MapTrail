@@ -2,6 +2,7 @@ package io.github.jadedbay.Config;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.util.Config;
+import io.github.jadedbay.MapTrailPlugin;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +17,8 @@ public class PlayerConfigManager {
     private final Path configDirectory;
     private final Map<UUID, Config<PlayerConfig>> configCache = new ConcurrentHashMap<>();
 
+    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
+
     public PlayerConfigManager(Path dataDirectory) {
         this.configDirectory = dataDirectory.resolve("player_config");
         try {
@@ -28,7 +31,18 @@ public class PlayerConfigManager {
     public CompletableFuture<PlayerConfig> loadPlayerConfig(UUID playerId) {
         Config<PlayerConfig> config = new Config<>(configDirectory, playerId.toString(), PlayerConfig.CODEC);
         configCache.put(playerId, config);
-        return config.load();
+
+        Path configFile = configDirectory.resolve(playerId.toString() + ".json");
+
+        return config.load().thenApply(playerConfig -> {
+            if (!Files.exists(configFile)) {
+                playerConfig.copyFrom(MapTrailPlugin.getDefaultPlayerConfig().get());
+                config.save();
+                LOGGER.atInfo().log("Created new player config: " + playerId);
+            }
+
+            return playerConfig;
+        });
     }
 
     public void unloadPlayerConfig(UUID playerId) {

@@ -3,6 +3,7 @@ package io.github.jadedbay.Config;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import io.github.jadedbay.PlayerTrail.PlayerTrailTracker;
 
 public class PlayerConfig {
     public static final BuilderCodec<PlayerConfig> CODEC =
@@ -27,8 +28,17 @@ public class PlayerConfig {
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     public int getMarkerCount() { return markerCount; }
-    public void setMarkerCount(int markerCount) { this.markerCount = markerCount; }
+    public void setMarkerCount(int markerCount) {
+        this.markerCount = markerCount;
+        PlayerTrailTracker.updateMarkerCount(markerCount);
+    }
 
     public double getDistanceThreshold() { return distanceThreshold; }
     public void setDistanceThreshold(double distanceThreshold) { this.distanceThreshold = distanceThreshold; }
+
+    public void copyFrom(PlayerConfig other) {
+        enabled = other.enabled;
+        markerCount = other.markerCount;
+        distanceThreshold = other.distanceThreshold;
+    }
 }

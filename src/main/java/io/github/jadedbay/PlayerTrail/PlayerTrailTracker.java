@@ -32,7 +32,6 @@ public class PlayerTrailTracker {
         if (currentPos == null) return;
 
         Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerId);
-
         List<MarkerEntry> playerMarkers = markers.computeIfAbsent(playerId, _ -> new ArrayList<>());
 
         if (playerMarkers.isEmpty() || reachedDistanceThreshold(currentPos, playerMarkers.getLast().position, config.get().getDistanceThreshold())) {
@@ -57,9 +56,9 @@ public class PlayerTrailTracker {
         markers.remove(playerUuid);
     }
 
-    public static void updateMaxMarkers(int newMaxMarkers) {
+    public static void updateMarkerCount(int markerCount) {
         for (List<MarkerEntry> playerMarkers : markers.values()) {
-            while (playerMarkers.size() > newMaxMarkers) {
+            while (playerMarkers.size() > markerCount) {
                 playerMarkers.removeFirst();
             }
         }

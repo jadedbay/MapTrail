@@ -13,7 +13,6 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.events.AddWorldEvent;
 import com.hypixel.hytale.server.core.util.Config;
 import io.github.jadedbay.Commands.MapTrailCommand;
-import io.github.jadedbay.Config.MapTrailConfig;
 import io.github.jadedbay.Config.PlayerConfig;
 import io.github.jadedbay.Config.PlayerConfigManager;
 import io.github.jadedbay.PlayerTrail.PlayerTrailMarkerProvider;
@@ -23,14 +22,14 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class MapTrailPlugin extends JavaPlugin {
-    private static Config<MapTrailConfig> config;
+    private static Config<PlayerConfig> defaultPlayerConfig;
     private static PlayerConfigManager playerConfig;
 
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
     public MapTrailPlugin(@Nonnull JavaPluginInit init) {
         super(init);
-        config = this.withConfig("MapTrail", MapTrailConfig.CODEC);
+        defaultPlayerConfig = this.withConfig("DefaultPlayerConfig", PlayerConfig.CODEC);
         playerConfig = new PlayerConfigManager(this.getDataDirectory());
     }
 
@@ -76,7 +75,7 @@ public class MapTrailPlugin extends JavaPlugin {
         }
     }
 
-    public static Config<MapTrailConfig> getConfig() { return config; }
+    public static Config<PlayerConfig> getDefaultPlayerConfig() { return defaultPlayerConfig; }
     public static Config<PlayerConfig> getPlayerConfig(UUID playerId) {
         return playerConfig.getConfig(playerId);
     }

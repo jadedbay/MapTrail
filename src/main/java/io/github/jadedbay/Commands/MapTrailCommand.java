@@ -11,29 +11,52 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.Config;
-import io.github.jadedbay.Config.MapTrailConfig;
 import io.github.jadedbay.Config.PlayerConfig;
 import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.util.UUID;
 
 public class MapTrailCommand extends AbstractPlayerCommand {
     public MapTrailCommand() {
         super("maptrail", "Configure map trail settings");
 
-        this.addSubCommand(new ConfigSubCommand());
+        this.addSubCommand(new DefaultCommand());
+        this.addSubCommand(new ConfigSubCommand(false));
 
         this.addSubCommand(new EnableSubCommand());
         this.addSubCommand(new DisableSubCommand());
 
-        this.addSubCommand(new MarkersSubCommand());
-        this.addSubCommand(new DistanceSubCommand());
+        this.addSubCommand(new MarkersSubCommand(false));
+        this.addSubCommand(new DistanceSubCommand(false));
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        playerRef.sendMessage(Message.raw("Usage: /maptrail <enable|disable|markers|distance>").color(Color.YELLOW));
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
+    }
+}
+
+class DefaultCommand extends AbstractPlayerCommand {
+    public DefaultCommand() {
+        super("default", "Configure the server default config values");
+
+        this.addSubCommand(new ConfigSubCommand(true));
+
+        this.addSubCommand(new MarkersSubCommand(true));
+        this.addSubCommand(new DistanceSubCommand(true));
+    }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        playerRef.sendMessage(Message.raw("Usage: /maptrail default <enable|disable|markers|distance>").color(Color.YELLOW));
+    }
+
+    public static Config<PlayerConfig> getConfig(boolean isDefault, UUID playerId) {
+        return isDefault
+                ? MapTrailPlugin.getDefaultPlayerConfig()
+                : MapTrailPlugin.getPlayerConfig(playerId);
     }
 }
 
@@ -70,16 +93,19 @@ class DisableSubCommand extends AbstractPlayerCommand {
 class MarkersSubCommand extends AbstractPlayerCommand {
     private final RequiredArg<Integer> valueArg;
 
-    public MarkersSubCommand() {
+    private final boolean isDefault;
+
+    public MarkersSubCommand(boolean isDefault) {
         super("markers", "Set max number of trail markers displayed on map at once");
         this.valueArg = this.withRequiredArg("value", "Max number of markers", ArgTypes.INTEGER);
+        this.isDefault = isDefault;
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = Math.max(0, commandContext.get(valueArg));
 
-        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        Config<PlayerConfig> config = DefaultCommand.getConfig(isDefault, playerRef.getUuid());
         config.get().setMarkerCount(value);
         config.save();
 
@@ -90,16 +116,19 @@ class MarkersSubCommand extends AbstractPlayerCommand {
 class DistanceSubCommand extends AbstractPlayerCommand {
     private final RequiredArg<Double> valueArg;
 
-    public DistanceSubCommand() {
+    private final boolean isDefault;
+
+    public DistanceSubCommand(boolean isDefault) {
         super("distance", "Set distance between markers");
         this.valueArg = this.withRequiredArg("value", "Distance between markers", ArgTypes.DOUBLE);
+        this.isDefault = isDefault;
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         double value = Math.max(0.1, commandContext.get(valueArg));
 
-        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        Config<PlayerConfig> config = DefaultCommand.getConfig(isDefault, playerRef.getUuid());
         config.get().setDistanceThreshold(value);
         config.save();
 
@@ -108,13 +137,16 @@ class DistanceSubCommand extends AbstractPlayerCommand {
 }
 
 class ConfigSubCommand extends AbstractPlayerCommand {
-    public ConfigSubCommand() {
+    private final boolean isDefault;
+
+    public ConfigSubCommand(boolean isDefault) {
         super("config", "View current config values");
+        this.isDefault = isDefault;
     }
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        PlayerConfig config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid()).get();
+        PlayerConfig config = DefaultCommand.getConfig(isDefault, playerRef.getUuid()).get();
 
         playerRef.sendMessage(Message.raw(
                 "[MapTrail] Config Values: \n" +
