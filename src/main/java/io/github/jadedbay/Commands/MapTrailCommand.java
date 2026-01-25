@@ -33,7 +33,7 @@ public class MapTrailCommand extends AbstractPlayerCommand {
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <enable|disable|markers|distance>").color(Color.YELLOW));
     }
 }
 
@@ -99,8 +99,9 @@ class DistanceSubCommand extends AbstractPlayerCommand {
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         double value = Math.max(0.1, commandContext.get(valueArg));
 
-        MapTrailPlugin.getConfig().get().setDistanceThreshold(value);
-        MapTrailPlugin.getConfig().save();
+        Config<PlayerConfig> config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
+        config.get().setDistanceThreshold(value);
+        config.save();
 
         playerRef.sendMessage(Message.raw("[MapTrail] Set Distance Threshold: " + value).color(Color.YELLOW));
     }
@@ -113,15 +114,13 @@ class ConfigSubCommand extends AbstractPlayerCommand {
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        MapTrailConfig config = MapTrailPlugin.getConfig().get();
+        PlayerConfig config = MapTrailPlugin.getPlayerConfig(playerRef.getUuid()).get();
 
         playerRef.sendMessage(Message.raw(
                 "[MapTrail] Config Values: \n" +
-                "   MaxMarkers = " + config.getMaxMarkers() + "\n" +
-                "   DistanceThreshold = " + config.getDistanceThreshold() + "\n" +
-                "   Size Thresholds:\n" +
-                "       Small = " + config.getSizeSmallThreshold() + "\n" +
-                "       Medium = " + config.getSizeMediumThreshold()
+                "   Enabled = " + config.getEnabled() + "\n" +
+                "   MarkerCount = " + config.getMarkerCount() + "\n" +
+                "   DistanceThreshold = " + config.getDistanceThreshold() + "\n"
         ).color(Color.YELLOW));
     }
 }
