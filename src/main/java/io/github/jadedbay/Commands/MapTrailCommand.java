@@ -8,6 +8,8 @@ import com.hypixel.hytale.server.core.command.system.arguments.system.FlagArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
+import com.hypixel.hytale.server.core.command.system.exceptions.NoPermissionException;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -17,15 +19,11 @@ import io.github.jadedbay.MapTrailPlugin;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
-import java.util.UUID;
 
 public class MapTrailCommand extends AbstractPlayerCommand {
-    private final FlagArg defaultFlag;
 
     public MapTrailCommand() {
         super("maptrail", "Configure map trail settings");
-
-        this.defaultFlag = this.withFlagArg("default", "Configure default map trail settings");
 
         this.addSubCommand(new ConfigSubCommand());
 
@@ -37,20 +35,17 @@ public class MapTrailCommand extends AbstractPlayerCommand {
     }
 
     @Override
+    protected boolean canGeneratePermission() { return false; }
+
+    @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        playerRef.sendMessage(Message.raw("Usage: /maptrail <markers|distance>").color(Color.YELLOW));
-    }
-
-    public FlagArg getDefaultFlag() { return defaultFlag; }
-
-    public static Config<PlayerConfig> getConfig(boolean isDefault, UUID playerId) {
-        return isDefault
-                ? MapTrailPlugin.getDefaultPlayerConfig()
-                : MapTrailPlugin.getPlayerConfig(playerId);
+        playerRef.sendMessage(Message.raw("Usage: /maptrail <enable|disable|markers|distance>").color(Color.YELLOW));
     }
 }
 
 abstract class MapTrailConfigCommand extends AbstractPlayerCommand {
+    public static final String DEFAULT_PERMISSION = "maptrail.default";
+
     protected final FlagArg defaultFlag;
 
     public MapTrailConfigCommand(String name, String description) {
@@ -58,11 +53,37 @@ abstract class MapTrailConfigCommand extends AbstractPlayerCommand {
         this.defaultFlag = this.withFlagArg("default", "Configure map trail settings");
     }
 
-    protected Config<PlayerConfig> getConfig(CommandContext context, UUID playerId) {
-        return context.get(defaultFlag)
+    protected Config<PlayerConfig> getConfig(CommandContext context, PlayerRef playerRef) {
+        boolean isDefault = context.get(defaultFlag);
+
+        if (isDefault) {
+            Player player = context.senderAs(Player.class);
+            if (!player.hasPermission(DEFAULT_PERMISSION)) {
+                playerRef.sendMessage(Message.raw("[MapTrail] You do not have permission to change default player config").color(Color.RED));
+                throw new NoPermissionException("maptrail.default");
+            }
+        }
+
+        return isDefault
                 ? MapTrailPlugin.getDefaultPlayerConfig()
-                : MapTrailPlugin.getPlayerConfig(playerId);
+                : MapTrailPlugin.getPlayerConfig(playerRef.getUuid());
     }
+
+    @Override
+    protected boolean canGeneratePermission() { return false; }
+
+    @Override
+    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        Player player = commandContext.senderAs(Player.class);
+        if (commandContext.get(defaultFlag) && !player.hasPermission(DEFAULT_PERMISSION)) {
+            playerRef.sendMessage(Message.raw("[MapTrail] You do not have permission to change default player config").color(Color.RED));
+            return;
+        }
+
+        executeCommand(commandContext, store, ref, playerRef, world);
+    }
+
+    protected abstract void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world);
 
     protected void sendMessage(PlayerRef playerRef, CommandContext context, String message) {
         String target = context.get(defaultFlag) ? "Default" : "Player";
@@ -76,8 +97,9 @@ class EnableSubCommand extends MapTrailConfigCommand {
     }
 
     @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        Config<PlayerConfig> config = getConfig(commandContext, playerRef.getUuid());
+    protected void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        super.execute(commandContext, store, ref, playerRef, world);
+        Config<PlayerConfig> config = getConfig(commandContext, playerRef);
         config.get().setEnabled(true);
         config.save();
 
@@ -91,8 +113,8 @@ class DisableSubCommand extends MapTrailConfigCommand {
     }
 
     @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        Config<PlayerConfig> config = getConfig(commandContext, playerRef.getUuid());
+    protected void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+        Config<PlayerConfig> config = getConfig(commandContext, playerRef);
         config.get().setEnabled(false);
         config.save();
 
@@ -109,10 +131,10 @@ class MarkersSubCommand extends MapTrailConfigCommand {
     }
 
     @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+    protected void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int value = Math.max(0, commandContext.get(valueArg));
 
-        Config<PlayerConfig> config = getConfig(commandContext, playerRef.getUuid());
+        Config<PlayerConfig> config = getConfig(commandContext, playerRef);
         config.get().setMarkerCount(value);
         config.save();
 
@@ -129,10 +151,10 @@ class DistanceSubCommand extends MapTrailConfigCommand {
     }
 
     @Override
-    protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+    protected void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         double value = Math.max(0.1, commandContext.get(valueArg));
 
-        Config<PlayerConfig> config = getConfig(commandContext, playerRef.getUuid());
+        Config<PlayerConfig> config = getConfig(commandContext, playerRef);
         config.get().setDistanceThreshold(value);
         config.save();
 
@@ -148,7 +170,7 @@ class ConfigSubCommand extends MapTrailConfigCommand {
 
     @Override
     protected void execute(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        PlayerConfig config = getConfig(commandContext, playerRef.getUuid()).get();
+        PlayerConfig config = getConfig(commandContext, playerRef).get();
 
         sendMessage(playerRef, commandContext, "Config Values: \n" +
                 "   Enabled = " + config.getEnabled() + "\n" +
@@ -156,4 +178,7 @@ class ConfigSubCommand extends MapTrailConfigCommand {
                 "   DistanceThreshold = " + config.getDistanceThreshold()
         );
     }
+
+    @Override
+    protected void executeCommand(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {}
 }
