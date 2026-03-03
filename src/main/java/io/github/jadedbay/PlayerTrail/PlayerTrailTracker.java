@@ -1,6 +1,12 @@
 package io.github.jadedbay.PlayerTrail;
 
+import com.hypixel.hytale.math.vector.Transform;
+import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.Position;
+import com.hypixel.hytale.protocol.packets.worldmap.MapMarker;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.universe.world.worldmap.markers.MapMarkerBuilder;
+import io.github.jadedbay.MapTrailConfig;
 import io.github.jadedbay.MapTrailPlugin;
 
 import java.util.ArrayList;
@@ -21,6 +27,14 @@ public class PlayerTrailTracker {
 
         public String getMarkerId(UUID playerUuid) {
             return "trail_marker_" + playerUuid + "_" + timestamp;
+        }
+
+        public MapMarker createMarker(Player player, String markerTexture) {
+            return new MapMarkerBuilder(
+                    getMarkerId(player.getUuid()) + "_" + markerTexture,
+                    markerTexture,
+                    new Transform(new Vector3d(position.x, position.y, position.z))
+            ).build();
         }
     }
 
@@ -61,5 +75,14 @@ public class PlayerTrailTracker {
                 playerMarkers.removeFirst();
             }
         }
+    }
+
+    private static String getMarkerTexture(int index, int markerCount) {
+        float percentage = (float)(index + 1) / markerCount;
+
+        MapTrailConfig config = MapTrailPlugin.getConfig().get();
+        if (percentage < config.getSizeSmallThreshold()) return "MapTrail_4.png";
+        if (percentage < config.getSizeMediumThreshold()) return "MapTrail_5.png";
+        return "MapTrail_6.png";
     }
 }
