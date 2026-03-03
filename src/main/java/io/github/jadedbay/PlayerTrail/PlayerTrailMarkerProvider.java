@@ -1,8 +1,5 @@
 package io.github.jadedbay.PlayerTrail;
 
-import com.hypixel.hytale.math.vector.Transform;
-import com.hypixel.hytale.protocol.Direction;
-import com.hypixel.hytale.protocol.FormattedMessage;
 import com.hypixel.hytale.protocol.packets.worldmap.MapMarker;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.World;
